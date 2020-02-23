@@ -50,10 +50,10 @@ function ready() {
  * @param config for customizing.
  * @returns promise that emits a svg string or path data array.
  */
-async function loadFromCanvas(canvas, config) {
+async function loadFromCanvas(canvas, config, params) {
   let ctx = canvas.getContext("2d");
   let imagedata = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-  return loadFromImageData(imagedata, canvas.width, canvas.height, config);
+  return loadFromImageData(imagedata, canvas.width, canvas.height, config, params);
 }
 
 /**
@@ -63,7 +63,7 @@ async function loadFromCanvas(canvas, config) {
  * @param config for customizing.
  * @returns promise that emits a svg string or path data array.
  */
-async function loadFromImageData(imagedata, width, height, config) {
+async function loadFromImageData(imagedata, width, height, config, params) {
   let start = wrapStart();
   let data = new Array(Math.ceil(imagedata.length / 32)).fill(0);
   let c = buildConfig(config);
@@ -82,7 +82,18 @@ async function loadFromImageData(imagedata, width, height, config) {
   }
 
   await ready();
-  let result = start(data, width, height, c.transform, c.pathonly);
+  let result = start(
+    data,
+    width,
+    height,
+    c.transform,
+    c.pathonly,
+    params.turdsize,
+    params.turnpolicy,
+    params.alphamax,
+    params.opticurve,
+    params.opttolerance
+    );
 
   if (config.pathonly) {
     return result
@@ -102,7 +113,12 @@ function wrapStart() {
     "number", // width
     "number", // height
     "number", // transform
-    "number" // pathonly
+    "number", // pathonly
+    "number", // turdsize
+    "number", // turnpolicy
+    "number", // alphamax
+    "number", // opticurve
+    "number"  // opttolerance
   ]);
 }
 
